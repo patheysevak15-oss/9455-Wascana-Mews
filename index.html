@@ -86,6 +86,21 @@
 .x-lb .c{top:max(18px,env(safe-area-inset-top,0px));right:max(18px,env(safe-area-inset-right,0px))}
 .x-lb .p{left:max(18px,env(safe-area-inset-left,0px))} .x-lb .n{right:max(18px,env(safe-area-inset-right,0px))}
 .x-lb .k{position:absolute;bottom:max(18px,env(safe-area-inset-bottom,0px));color:#aaa;font:600 13px var(--font);letter-spacing:.14em}
+.x-intro{position:fixed;inset:0;z-index:2000;background:var(--hero);color:#fff;display:grid;place-items:center;text-align:center;padding:24px;cursor:pointer;animation:xOut .8s cubic-bezier(.7,0,.2,1) 2.6s forwards}
+.x-intro.pv{position:absolute;inset:0 0 auto 0;height:min(84vh,780px)}
+.x-intro > div{max-width:100%}
+.x-intro img{height:58px;width:auto;margin:0 auto 26px;opacity:0;animation:xFade .6s ease .1s forwards}
+.x-intro .w{display:block;font:700 13px/1 var(--font);letter-spacing:.34em;text-transform:uppercase;color:var(--red);opacity:0;animation:xFade .6s ease .25s forwards}
+.x-intro .a{display:block;overflow:hidden;margin-top:18px;padding-bottom:.06em}
+.x-intro .a span{display:block;font-size:clamp(44px,9.5cqw,124px);transform:translateY(110%);animation:xUp .95s cubic-bezier(.2,.8,.2,1) .5s forwards}
+.x-intro .bar{display:block;height:4px;background:var(--red);width:0;margin:24px auto 0;animation:xBar .7s cubic-bezier(.6,0,.2,1) 1.05s forwards}
+.x-intro .c{display:block;margin-top:18px;font-size:16px;letter-spacing:.04em;color:#cfcfcf;opacity:0;animation:xFade .6s ease 1.2s forwards}
+.x-intro .s{position:absolute;right:max(20px,env(safe-area-inset-right,0px));bottom:max(18px,env(safe-area-inset-bottom,0px));font:600 11px/1 var(--font);letter-spacing:.2em;text-transform:uppercase;color:#777}
+@keyframes xFade{to{opacity:1}}
+@keyframes xUp{to{transform:none}}
+@keyframes xBar{to{width:min(220px,40%)}}
+@keyframes xOut{to{transform:translateY(-100%)}}
+@media (prefers-reduced-motion: reduce){.x-intro{display:none}}
 @container site (max-width: 860px){
   .x-links{display:none}
   .x-hl ul{grid-template-columns:repeat(2,1fr)}
@@ -109,7 +124,13 @@
 }
 @media (prefers-reduced-motion: reduce){.site *{transition:none!important}}
 </style>
-</head><body><div class="site">
+</head><body><div class="site"><div class="x-intro" role="presentation"><div>
+  <img src="images/logo.png" alt="">
+  <span class="w">Welcome to</span>
+  <span class="a"><span class="x-cond">9455 Wascana Mews</span></span>
+  <span class="bar"></span>
+  <span class="c">Regina, SK S4V 2V5</span>
+</div><span class="s">Click to skip</span></div>
 <nav class="x-nav"><div class="x-wrap">
   <a class="x-brand" href="#top"><img src="images/logo.png" alt="The Real Estate Gurus logo"><span class="x-bt"><b>The Real Estate Gurus</b><em>Presents</em></span></a>
   <div class="x-links"><a href="#photos">Photos</a><a href="#video">Video</a><a href="#contact">Contact</a></div>
@@ -184,6 +205,17 @@
   qa('a[href^="#"]').forEach(a => a.addEventListener("click", e => {
     const t = q(a.getAttribute("href")); if (!t) return; e.preventDefault(); t.scrollIntoView({behavior:"smooth", block:"start"});
   }));
+  const intro = q(".x-intro");
+  if (intro) {
+    const done = () => { if (!intro.isConnected) return; intro.remove(); if (live) document.documentElement.style.overflow = ""; };
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) done();
+    else {
+      if (live) document.documentElement.style.overflow = "hidden";
+      intro.addEventListener("animationend", e => { if (e.animationName === "xOut") done(); });
+      intro.addEventListener("click", done);
+      setTimeout(done, 4200);
+    }
+  }
   const gal = q(".x-gal"), more = q(".x-all");
   if (more) more.addEventListener("click", () => { const on = gal.classList.toggle("all"); more.textContent = on ? "Show fewer photos" : more.dataset.label; if (!on) gal.scrollIntoView({block:"start"}); });
   const lb = q(".x-lb"); if (!lb) return;
